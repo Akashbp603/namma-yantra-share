@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ನಮ್ಮ-ಯಂತ್ರ Share | Namma-Yantra Share</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+Kannada:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --orange: #F97316;
+    --orange-dark: #C2540A;
+    --orange-light: #FFF7ED;
+    --orange-mid: #FFEDD5;
+    --green: #16A34A;
+    --green-light: #DCFCE7;
+    --red: #DC2626;
+    --red-light: #FEE2E2;
+    --amber: #D97706;
+    --amber-light: #FEF3C7;
+    --bg: #FDF8F3;
+    --surface: #FFFFFF;
+    --surface2: #F9F5F0;
+    --border: #E8DDD3;
+    --text1: #1C1917;
+    --text2: #57534E;
+    --text3: #A8A29E;
+    --shadow: 0 4px 24px rgba(201,130,60,0.13);
+    --shadow-lg: 0 8px 40px rgba(201,130,60,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text1);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: linear-gradient(135deg, #EA580C 0%, #F97316 60%, #FB923C 100%);
+    padding: 16px 20px 14px;
+    position: sticky; top: 0; z-index: 200;
+    box-shadow: 0 4px 20px rgba(249,115,22,0.35);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .header-logo { font-size: 30px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+  .header-text { flex: 1; }
+  .header-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 19px; font-weight: 800;
+    color: #fff; letter-spacing: 0.3px;
+  }
+  .header-sub { font-size: 11px; color: rgba(255,255,255,0.8); margin-top: -1px; }
+  .header-badge {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 12px; font-weight: 600; color: #fff;
+    backdrop-filter: blur(8px);
+  }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; top: 72px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: var(--green); color: #fff;
+    padding: 10px 22px; border-radius: 30px;
+    font-weight: 600; font-size: 14px; z-index: 999;
+    box-shadow: 0 6px 24px rgba(22,163,74,0.4);
+    opacity: 0; pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--red); box-shadow: 0 6px 24px rgba(220,38,38,0.4); }
+
+  /* ─── BOTTOM NAV ─── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .nav-btn {
+    flex: 1; border: none; background: none; cursor: pointer;
+    padding: 10px 0 12px;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    transition: transform 0.15s;
+  }
+  .nav-btn:active { transform: scale(0.93); }
+  .nav-icon { font-size: 22px; line-height: 1; }
+  .nav-label { font-size: 10px; font-weight: 600; color: var(--text3); transition: color 0.2s; }
+  .nav-btn.active .nav-label { color: var(--orange); }
+  .nav-dot {
+    width: 20px; height: 3px; border-radius: 2px;
+    background: var(--orange); margin-top: 2px;
+    opacity: 0; transform: scaleX(0.3);
+    transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .nav-btn.active .nav-dot { opacity: 1; transform: scaleX(1); }
+
+  /* ─── PAGES ─── */
+  .page { display: none; padding: 16px 14px 90px; animation: fadeUp 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── STATS ROW ─── */
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  .stat-card {
+    background: var(--surface); border-radius: 16px; padding: 14px 8px;
+    text-align: center; border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .stat-icon { font-size: 22px; }
+  .stat-val { font-family: 'Baloo 2', cursive; font-size: 22px; font-weight: 800; color: var(--orange); line-height: 1.1; }
+  .stat-lbl { font-size: 10px; color: var(--text3); font-weight: 500; margin-top: 1px; }
+
+  /* ─── FILTER CHIPS ─── */
+  .filter-scroll { overflow-x: auto; margin-bottom: 16px; padding-bottom: 4px; scrollbar-width: none; }
+  .filter-scroll::-webkit-scrollbar { display: none; }
+  .chips { display: flex; gap: 8px; width: max-content; }
+  .chip {
+    border: none; border-radius: 30px; padding: 7px 16px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    background: var(--surface); color: var(--text2);
+    border: 1.5px solid var(--border);
+    transition: all 0.2s; white-space: nowrap; font-family: 'DM Sans', sans-serif;
+  }
+  .chip.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+
+  /* ─── MACHINE CARDS ─── */
+  .machine-card {
+    background: var(--surface); border-radius: 20px; margin-bottom: 14px;
+    border: 1.5px solid var(--border); overflow: hidden;
+    box-shadow: var(--shadow); transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .machine-card:active { transform: scale(0.985); box-shadow: none; }
+  .machine-card.unavailable { opacity: 0.6; }
+  .card-body { padding: 16px; }
+  .card-top { display: flex; gap: 12px; align-items: flex-start; }
+  .machine-icon-wrap {
+    width: 54px; height: 54px; border-radius: 14px;
+    background: var(--orange-light); display: flex; align-items: center;
+    justify-content: center; font-size: 28px; flex-shrink: 0;
+    border: 1.5px solid var(--orange-mid);
+  }
+  .machine-info { flex: 1; min-width: 0; }
+  .machine-name {
+    font-family: 'Baloo 2', cursive; font-size: 15px; font-weight: 700;
+    color: var(--text1); line-height: 1.2;
+  }
+  .machine-owner { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .machine-dist { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .card-right { text-align: right; flex-shrink: 0; }
+  .avail-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 8px; margin-bottom: 5px;
+  }
+  .avail-badge.yes { background: var(--green-light); color: var(--green); }
+  .avail-badge.no { background: #F3F4F6; color: #6B7280; }
+  .price-hr { font-family: 'Baloo 2', cursive; font-size: 18px; font-weight: 800; color: var(--orange); }
+  .price-day { font-size: 11px; color: var(--text3); }
+
+  .card-divider { height: 1px; background: var(--border); margin: 12px 16px; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 12px; }
+  .tag {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 4px 10px;
+    font-size: 11px; color: var(--text2); font-weight: 500;
+  }
+  .tag.condition-excellent { color: var(--green); font-weight: 700; }
+  .tag.condition-good { color: var(--amber); font-weight: 700; }
+  .tag.condition-fair { color: var(--red); font-weight: 700; }
+
+  .btn-request {
+    display: block; width: calc(100% - 32px); margin: 0 16px 16px;
+    background: linear-gradient(135deg, #F97316, #EA580C);
+    color: #fff; border: none; border-radius: 14px;
+    padding: 12px; font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: 'Baloo 2', cursive; letter-spacing: 0.3px;
+    box-shadow: 0 4px 16px rgba(249,115,22,0.35);
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .btn-request:active { transform: scale(0.97); box-shadow: none; }
+
+  /* ─── BOOKING SCREEN ─── */
+  #page-booking { display: none; }
+  #page-booking.active { display: block; }
+
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 8px 14px; cursor: pointer;
+    font-size: 13px; font-weight: 600; color: var(--text2);
+    margin-bottom: 16px; width: fit-content;
+    transition: all 0.15s;
+  }
+  .back-btn:active { background: var(--surface2); }
+
+  .booking-detail-card {
+    background: var(--surface); border-radius: 20px; padding: 20px;
+    border: 1.5px solid var(--border); box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .booking-machine-name {
+    font-family: 'Baloo 2', cursive; font-size: 22px; font-weight: 800;
+    text-align: center; color: var(--text1);
+  }
+  .booking-machine-type { text-align: center; color: var(--orange); font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .info-box {
+    background: var(--surface2); border-radius: 12px; padding: 10px 12px;
+    border: 1px solid var(--border);
+  }
+  .info-lbl { font-size: 10px; color: var(--text3); font-weight: 500; }
+  .info-val { font-size: 13px; font-weight: 700; color: var(--text1); margin-top: 2px; }
+
+  .form-card {
+    background: var(--surface); border-radius: 20px; padding: 20px;
+    border: 1.5px solid var(--border); box-shadow: var(--shadow);
+  }
+  .form-title {
+    font-family: 'Baloo 2', cursive; font-size: 18px; font-weight: 700;
+    color: var(--orange); margin-bottom: 18px;
+  }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; }
+  .form-date {
+    width: 100%; padding: 12px 14px; border-radius: 12px;
+    border: 1.5px solid var(--border); background: var(--surface2);
+    font-size: 14px; color: var(--text1); font-family: 'DM Sans', sans-serif;
+    margin-bottom: 16px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-date:focus { border-color: var(--orange); }
+
+  .rate-toggle { display: flex; gap: 10px; margin-bottom: 16px; }
+  .rate-btn {
+    flex: 1; padding: 10px; border-radius: 12px;
+    border: 1.5px solid var(--border); background: var(--surface2);
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    color: var(--text2); font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .rate-btn.active {
+    background: var(--orange); color: #fff;
+    border-color: var(--orange);
+    box-shadow: 0 4px 12px rgba(249,115,22,0.3);
+  }
+
+  .duration-row {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+  }
+  .dur-btn {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--orange); color: #fff;
+    border: none; font-size: 22px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: transform 0.1s; flex-shrink: 0;
+  }
+  .dur-btn:active { transform: scale(0.9); }
+  .dur-display { flex: 1; text-align: center; }
+  .dur-num {
+    font-family: 'Baloo 2', cursive; font-size: 32px; font-weight: 800;
+    color: var(--text1); line-height: 1;
+  }
+  .dur-unit { font-size: 12px; color: var(--text3); font-weight: 500; }
+
+  .price-box {
+    background: linear-gradient(135deg, var(--orange-light), var(--orange-mid));
+    border: 1.5px solid #FED7AA; border-radius: 16px;
+    padding: 18px; text-align: center; margin-bottom: 18px;
+  }
+  .price-formula { font-size: 14px; color: var(--text2); font-weight: 500; }
+  .price-total {
+    font-family: 'Baloo 2', cursive; font-size: 34px; font-weight: 800;
+    color: var(--orange); line-height: 1.1;
+  }
+  .price-lbl { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  .btn-submit {
+    width: 100%; padding: 15px; border-radius: 16px;
+    background: linear-gradient(135deg, #F97316, #EA580C);
+    color: #fff; border: none;
+    font-size: 16px; font-weight: 800; cursor: pointer;
+    font-family: 'Baloo 2', cursive; letter-spacing: 0.4px;
+    box-shadow: 0 6px 20px rgba(249,115,22,0.4);
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .btn-submit:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(249,115,22,0.3); }
+  .btn-submit:disabled { background: #D1D5DB; box-shadow: none; cursor: not-allowed; }
+
+  /* ─── REQUESTS PAGE ─── */
+  .page-title {
+    font-family: 'Baloo 2', cursive; font-size: 20px; font-weight: 800;
+    color: var(--text1); margin-bottom: 16px;
+  }
+  .req-card {
+    background: var(--surface); border-radius: 18px; padding: 16px;
+    border: 1.5px solid var(--border); margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+  .req-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .req-machine { font-family: 'Baloo 2', cursive; font-size: 15px; font-weight: 700; color: var(--text1); }
+  .req-owner { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .status-badge {
+    font-size: 10px; font-weight: 800; padding: 4px 10px;
+    border-radius: 8px; flex-shrink: 0; margin-left: 8px;
+  }
+  .status-badge.pending { background: var(--amber-light); color: var(--amber); }
+  .status-badge.accepted { background: var(--green-light); color: var(--green); }
+  .status-badge.declined { background: var(--red-light); color: var(--red); }
+  .req-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .req-tag {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 10px;
+    font-size: 11px; color: var(--text2); font-weight: 500;
+  }
+  .req-actions { display: flex; gap: 10px; margin-top: 12px; }
+  .btn-accept, .btn-decline {
+    flex: 1; padding: 10px; border-radius: 12px;
+    border: none; font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: transform 0.1s;
+  }
+  .btn-accept:active, .btn-decline:active { transform: scale(0.96); }
+  .btn-accept { background: var(--green); color: #fff; }
+  .btn-decline { background: var(--red); color: #fff; }
+
+  /* ─── OWNER PAGE ─── */
+  .earnings-card {
+    background: linear-gradient(135deg, #EA580C, #F97316, #FB923C);
+    border-radius: 20px; padding: 22px; margin-bottom: 18px;
+    box-shadow: var(--shadow-lg);
+  }
+  .earnings-title { color: rgba(255,255,255,0.85); font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+  .earnings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .earning-item .e-lbl { color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 500; }
+  .earning-item .e-val {
+    font-family: 'Baloo 2', cursive; font-size: 22px; font-weight: 800; color: #fff; line-height: 1.1;
+  }
+
+  .empty-state { text-align: center; padding: 50px 20px; }
+  .empty-icon { font-size: 50px; margin-bottom: 12px; }
+  .empty-title { font-size: 16px; color: var(--text2); font-weight: 600; }
+  .empty-sub { font-size: 13px; color: var(--text3); margin-top: 4px; }
+
+  /* ─── SECTION LABEL ─── */
+  .section-lbl {
+    font-family: 'Baloo 2', cursive; font-size: 16px; font-weight: 700;
+    color: var(--orange); margin-bottom: 12px; margin-top: 4px;
+  }
+
+  /* ─── SCROLL AREA ─── */
+  .scroll-area { overflow-y: auto; }
+
+  @media (min-width: 480px) {
+    .header { padding: 18px 28px 16px; }
+    .page { max-width: 480px; margin: 0 auto; }
+    .bottom-nav { max-width: 480px; left: 50%; transform: translateX(-50%); }
+    .toast { max-width: 340px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">🚜</div>
+  <div class="header-text">
+    <div class="header-title">ನಮ್ಮ-ಯಂತ್ರ Share</div>
+    <div class="header-sub">Namma-Yantra Share • Uber for Tractors</div>
+  </div>
+  <div class="header-badge">📍 Dharwad</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  PAGE: BROWSE                           -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page active" id="page-browse">
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">🚜</div>
+      <div class="stat-val" id="stat-total">6</div>
+      <div class="stat-lbl">Machines</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-val" id="stat-avail">4</div>
+      <div class="stat-lbl">Available</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👨‍🌾</div>
+      <div class="stat-val">6</div>
+      <div class="stat-lbl">Owners</div>
+    </div>
+  </div>
+
+  <!-- Filter Chips -->
+  <div class="filter-scroll">
+    <div class="chips" id="chips">
+      <button class="chip active" onclick="filterMachines('All', this)">🔧 All</button>
+      <button class="chip" onclick="filterMachines('Tractor', this)">🚜 Tractor</button>
+      <button class="chip" onclick="filterMachines('Power Tiller', this)">🛠 Power Tiller</button>
+      <button class="chip" onclick="filterMachines('Harvester', this)">🌾 Harvester</button>
+      <button class="chip" onclick="filterMachines('Sprayer', this)">💧 Sprayer</button>
+    </div>
+  </div>
+
+  <!-- Machine List -->
+  <div id="machine-list"></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  PAGE: BOOKING                          -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page" id="page-booking">
+  <button class="back-btn" onclick="closeBooking()">← Back to Browse</button>
+
+  <!-- Machine Detail -->
+  <div class="booking-detail-card">
+    <div style="font-size:48px;text-align:center;margin-bottom:10px" id="b-icon"></div>
+    <div class="booking-machine-name" id="b-name"></div>
+    <div class="booking-machine-type" id="b-type"></div>
+    <div class="info-grid">
+      <div class="info-box"><div class="info-lbl">👤 Owner</div><div class="info-val" id="b-owner"></div></div>
+      <div class="info-box"><div class="info-lbl">📞 Phone</div><div class="info-val" id="b-phone"></div></div>
+      <div class="info-box"><div class="info-lbl">⏱ Hourly Rate</div><div class="info-val" id="b-hr" style="color:var(--orange)"></div></div>
+      <div class="info-box"><div class="info-lbl">📅 Daily Rate</div><div class="info-val" id="b-dr" style="color:var(--orange)"></div></div>
+      <div class="info-box"><div class="info-lbl">🔧 Condition</div><div class="info-val" id="b-cond"></div></div>
+      <div class="info-box"><div class="info-lbl">🗓 Last Service</div><div class="info-val" id="b-svc"></div></div>
+    </div>
+  </div>
+
+  <!-- Booking Form -->
+  <div class="form-card">
+    <div class="form-title">📋 Rental Request</div>
+
+    <label class="form-label">Select Date</label>
+    <input type="date" class="form-date" id="booking-date" oninput="updatePrice()" />
+
+    <label class="form-label">Rate Type</label>
+    <div class="rate-toggle">
+      <button class="rate-btn active" id="btn-hourly" onclick="setRateType('hourly')">⏱ Hourly</button>
+      <button class="rate-btn" id="btn-daily" onclick="setRateType('daily')">📅 Daily</button>
+    </div>
+
+    <label class="form-label">Duration (<span id="dur-unit-lbl">Hours</span>)</label>
+    <div class="duration-row">
+      <button class="dur-btn" onclick="changeDur(-1)">−</button>
+      <div class="dur-display">
+        <div class="dur-num" id="dur-num">4</div>
+        <div class="dur-unit" id="dur-unit">Hours</div>
+      </div>
+      <button class="dur-btn" onclick="changeDur(1)">+</button>
+    </div>
+
+    <div class="price-box">
+      <div class="price-formula" id="price-formula">4 hrs × ₹500</div>
+      <div class="price-total" id="price-total">= ₹2,000</div>
+      <div class="price-lbl">Total Estimated Cost</div>
+    </div>
+
+    <button class="btn-submit" id="btn-submit" onclick="submitRequest()">📤 Send Request to Owner</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  PAGE: REQUESTS                         -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page" id="page-requests">
+  <div class="page-title">📋 My Rental Requests</div>
+  <div id="requests-list"></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  PAGE: OWNER                            -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page" id="page-owner">
+  <div class="page-title">🏠 Owner Dashboard</div>
+
+  <!-- Earnings Card -->
+  <div class="earnings-card">
+    <div class="earnings-title">📊 Earnings Summary</div>
+    <div class="earnings-grid">
+      <div class="earning-item"><div class="e-lbl">This Month</div><div class="e-val" id="e-month">₹0</div></div>
+      <div class="earning-item"><div class="e-lbl">Rating</div><div class="e-val">4.8 ⭐</div></div>
+      <div class="earning-item"><div class="e-lbl">Total Rentals</div><div class="e-val" id="e-rentals">0</div></div>
+      <div class="earning-item"><div class="e-lbl">Idle Days Saved</div><div class="e-val" id="e-idle">0 days</div></div>
+    </div>
+  </div>
+
+  <div class="section-lbl">📥 Incoming Requests</div>
+  <div id="owner-requests-list"></div>
+</div>
+
+<!-- ─── BOTTOM NAV ─── -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-browse" onclick="showPage('browse')">
+    <div class="nav-icon">🚜</div>
+    <div class="nav-label">Browse</div>
+    <div class="nav-dot"></div>
+  </button>
+  <button class="nav-btn" id="nav-requests" onclick="showPage('requests')">
+    <div class="nav-icon">📋</div>
+    <div class="nav-label">Requests</div>
+    <div class="nav-dot"></div>
+  </button>
+  <button class="nav-btn" id="nav-owner" onclick="showPage('owner')">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label">Owner</div>
+    <div class="nav-dot"></div>
+  </button>
+</nav>
+
+<script>
+// ═══════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════
+const machines = [
+  { id:1, name:"Mahindra Tractor 575", type:"Tractor", owner:"Raju Patil", phone:"+91 98765 43210", dist:1.2, hr:500, dr:3500, available:true, condition:"Excellent", service:"10 Apr 2026", location:"Dharwad Village", icon:"🚜" },
+  { id:2, name:"VST Power Tiller PT-130", type:"Power Tiller", owner:"Suresh Gowda", phone:"+91 97654 32109", dist:2.8, hr:300, dr:2000, available:false, condition:"Good", service:"22 Mar 2026", location:"Hubli Outskirts", icon:"🛠️" },
+  { id:3, name:"John Deere Harvester W70", type:"Harvester", owner:"Manjunath K", phone:"+91 96543 21098", dist:3.5, hr:800, dr:5000, available:true, condition:"Excellent", service:"01 May 2026", location:"Gadag Farm", icon:"🌾" },
+  { id:4, name:"Kirloskar Sprayer KS-20", type:"Sprayer", owner:"Lakshmi Devi", phone:"+91 95432 10987", dist:0.9, hr:200, dr:1200, available:true, condition:"Good", service:"28 Apr 2026", location:"Belgaum Road", icon:"💧" },
+  { id:5, name:"Escorts Tractor 45HP", type:"Tractor", owner:"Basavraj M", phone:"+91 94321 09876", dist:4.1, hr:450, dr:3000, available:true, condition:"Fair", service:"15 Feb 2026", location:"Koppal District", icon:"🚜" },
+  { id:6, name:"Honda Power Tiller FJ500", type:"Power Tiller", owner:"Geetha R", phone:"+91 93210 98765", dist:1.8, hr:280, dr:1800, available:false, condition:"Excellent", service:"05 May 2026", location:"Raichur Village", icon:"🛠️" },
+];
+
+let requests = [
+  { id:101, machine:"Mahindra Tractor 575", type:"Tractor", owner:"Raju Patil", farmer:"Venkatesh B", date:"2026-05-10", duration:8, rateType:"hourly", total:4000, status:"accepted" },
+  { id:102, machine:"Kirloskar Sprayer KS-20", type:"Sprayer", owner:"Lakshmi Devi", farmer:"Venkatesh B", date:"2026-05-12", duration:1, rateType:"daily", total:1200, status:"pending" },
+];
+
+let currentMachine = null;
+let rateType = "hourly";
+let duration = 4;
+let currentFilter = "All";
+
+// ═══════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+
+  if (page === 'requests') renderRequests();
+  if (page === 'owner') { renderOwnerRequests(); updateEarnings(); }
+}
+
+// ═══════════════════════════════════════
+//  BROWSE PAGE
+// ═══════════════════════════════════════
+function filterMachines(type, el) {
+  currentFilter = type;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderMachines();
+}
+
+function renderMachines() {
+  const list = currentFilter === 'All' ? machines : machines.filter(m => m.type === currentFilter);
+  const container = document.getElementById('machine-list');
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No machines found</div></div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(m => `
+    <div class="machine-card ${m.available ? '' : 'unavailable'}">
+      <div class="card-body">
+        <div class="card-top">
+          <div class="machine-icon-wrap">${m.icon}</div>
+          <div class="machine-info">
+            <div class="machine-name">${m.name}</div>
+            <div class="machine-owner">👤 ${m.owner}</div>
+            <div class="machine-dist">📍 ${m.dist} km away · ${m.location}</div>
+          </div>
+          <div class="card-right">
+            <div class="avail-badge ${m.available ? 'yes' : 'no'}">${m.available ? '● AVAILABLE' : '● BUSY'}</div>
+            <div class="price-hr">₹${m.hr}/hr</div>
+            <div class="price-day">₹${m.dr}/day</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      <div class="tags">
+        <span class="tag">🔧 ${m.type}</span>
+        <span class="tag condition-${m.condition.toLowerCase()}">● ${m.condition}</span>
+        <span class="tag">🗓 ${m.service}</span>
+      </div>
+      ${m.available ? `<button class="btn-request" onclick="openBooking(${m.id})">Request This Machine →</button>` : ''}
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════
+//  BOOKING PAGE
+// ═══════════════════════════════════════
+function openBooking(id) {
+  currentMachine = machines.find(m => m.id === id);
+  rateType = 'hourly';
+  duration = 4;
+
+  document.getElementById('b-icon').textContent = currentMachine.icon;
+  document.getElementById('b-name').textContent = currentMachine.name;
+  document.getElementById('b-type').textContent = currentMachine.type;
+  document.getElementById('b-owner').textContent = currentMachine.owner;
+  document.getElementById('b-phone').textContent = currentMachine.phone;
+  document.getElementById('b-hr').textContent = `₹${currentMachine.hr}/hr`;
+  document.getElementById('b-dr').textContent = `₹${currentMachine.dr}/day`;
+  document.getElementById('b-cond').textContent = currentMachine.condition;
+  const condEl = document.getElementById('b-cond');
+  condEl.style.color = currentMachine.condition === 'Excellent' ? 'var(--green)' : currentMachine.condition === 'Good' ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('b-svc').textContent = currentMachine.service;
+
+  // Reset form
+  document.getElementById('booking-date').value = '';
+  document.getElementById('btn-hourly').classList.add('active');
+  document.getElementById('btn-daily').classList.remove('active');
+  document.getElementById('dur-num').textContent = 4;
+  document.getElementById('dur-unit').textContent = 'Hours';
+  document.getElementById('dur-unit-lbl').textContent = 'Hours';
+
+  // Set today as min date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('booking-date').min = today;
+
+  updatePrice();
+
+  // Hide all pages, show booking
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-booking').classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  window.scrollTo(0,0);
+}
+
+function closeBooking() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-browse').classList.add('active');
+  document.getElementById('nav-browse').classList.add('active');
+}
+
+function setRateType(type) {
+  rateType = type;
+  duration = type === 'hourly' ? 4 : 1;
+  document.getElementById('dur-num').textContent = duration;
+  document.getElementById('btn-hourly').classList.toggle('active', type === 'hourly');
+  document.getElementById('btn-daily').classList.toggle('active', type === 'daily');
+  const unit = type === 'hourly' ? 'Hours' : 'Days';
+  document.getElementById('dur-unit').textContent = unit;
+  document.getElementById('dur-unit-lbl').textContent = unit;
+  updatePrice();
+}
+
+function changeDur(delta) {
+  duration = Math.max(1, duration + delta);
+  document.getElementById('dur-num').textContent = duration;
+  updatePrice();
+}
+
+function updatePrice() {
+  if (!currentMachine) return;
+  const rate = rateType === 'hourly' ? currentMachine.hr : currentMachine.dr;
+  const total = duration * rate;
+  const unitShort = rateType === 'hourly' ? 'hrs' : 'days';
+  document.getElementById('price-formula').textContent = `${duration} ${unitShort} × ₹${rate.toLocaleString('en-IN')}`;
+  document.getElementById('price-total').textContent = `= ₹${total.toLocaleString('en-IN')}`;
+}
+
+function submitRequest() {
+  const date = document.getElementById('booking-date').value;
+  if (!date) { showToast('Please select a date first!', true); return; }
+
+  const rate = rateType === 'hourly' ? currentMachine.hr : currentMachine.dr;
+  const total = duration * rate;
+
+  requests.unshift({
+    id: Date.now(),
+    machine: currentMachine.name,
+    type: currentMachine.type,
+    owner: currentMachine.owner,
+    farmer: 'My Farm',
+    date, duration, rateType, total,
+    status: 'pending'
+  });
+
+  showToast(`✅ Request sent to ${currentMachine.owner}!`);
+  closeBooking();
+}
+
+// ═══════════════════════════════════════
+//  REQUESTS PAGE
+// ═══════════════════════════════════════
+function renderRequests() {
+  const container = document.getElementById('requests-list');
+  if (requests.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No requests yet</div><div class="empty-sub">Browse machines and send a rental request!</div></div>`;
+    return;
+  }
+  container.innerHTML = requests.map(r => `
+    <div class="req-card">
+      <div class="req-top">
+        <div>
+          <div class="req-machine">${r.machine}</div>
+          <div class="req-owner">👤 Owner: ${r.owner}</div>
+        </div>
+        <span class="status-badge ${r.status}">${r.status.toUpperCase()}</span>
+      </div>
+      <div class="req-tags">
+        <span class="req-tag">📅 ${r.date}</span>
+        <span class="req-tag">⏱ ${r.duration} ${r.rateType === 'hourly' ? 'hrs' : 'days'}</span>
+        <span class="req-tag">💰 ₹${r.total.toLocaleString('en-IN')}</span>
+        <span class="req-tag">🔧 ${r.type}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════
+//  OWNER PAGE
+// ═══════════════════════════════════════
+function updateEarnings() {
+  const accepted = requests.filter(r => r.status === 'accepted');
+  const total = accepted.reduce((sum, r) => sum + r.total, 0);
+  document.getElementById('e-month').textContent = `₹${total.toLocaleString('en-IN')}`;
+  document.getElementById('e-rentals').textContent = accepted.length;
+  document.getElementById('e-idle').textContent = `${accepted.length * 2} days`;
+}
+
+function renderOwnerRequests() {
+  const container = document.getElementById('owner-requests-list');
+  if (requests.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No incoming requests</div></div>`;
+    return;
+  }
+  container.innerHTML = requests.map(r => `
+    <div class="req-card" id="req-${r.id}">
+      <div class="req-top">
+        <div>
+          <div class="req-machine">${r.machine}</div>
+          <div class="req-owner">👨‍🌾 Farmer: ${r.farmer}</div>
+        </div>
+        <span class="status-badge ${r.status}">${r.status.toUpperCase()}</span>
+      </div>
+      <div class="req-tags">
+        <span class="req-tag">📅 ${r.date}</span>
+        <span class="req-tag">⏱ ${r.duration} ${r.rateType === 'hourly' ? 'hrs' : 'days'}</span>
+        <span class="req-tag">💰 ₹${r.total.toLocaleString('en-IN')}</span>
+      </div>
+      ${r.status === 'pending' ? `
+      <div class="req-actions">
+        <button class="btn-accept" onclick="updateStatus(${r.id}, 'accepted')">✅ Accept</button>
+        <button class="btn-decline" onclick="updateStatus(${r.id}, 'declined')">❌ Decline</button>
+      </div>` : ''}
+    </div>
+  `).join('');
+}
+
+function updateStatus(id, status) {
+  const req = requests.find(r => r.id === id);
+  if (!req) return;
+  req.status = status;
+  renderOwnerRequests();
+  updateEarnings();
+  showToast(status === 'accepted' ? `✅ Request Accepted!` : `Request Declined`, status === 'declined');
+}
+
+// ═══════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '');
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+renderMachines();
+</script>
+</body>
+</html>
